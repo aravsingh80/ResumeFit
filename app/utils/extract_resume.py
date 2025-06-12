@@ -1,0 +1,1 @@
+#Script for extracting the text from the uploaded resume
