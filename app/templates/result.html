@@ -1,1 +1,27 @@
 <!--Results page-->
+<!DOCTYPE hrml>
+<html>
+    <head>
+        <title>
+            Results
+        </title>
+    </head>
+    <body>
+        <h1>
+            Results
+        </h1>
+        {% if result is string %}
+            <p>
+                {{results}}
+            </p>
+        {% else %}
+            <h2>
+                {{result}}%
+            </h2>
+        {% endif %}
+        <br>
+        <a href = "{{url_for('index')}}">
+            Upload another
+        </a>
+    </body>
+</html>
