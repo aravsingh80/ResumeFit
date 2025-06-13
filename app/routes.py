@@ -3,6 +3,9 @@ import os
 from app.utils.extract_resume import extract_text
 from app.utils.job_web_scraper import scrape_job
 
+app = Flask(__name__)
+app.secret_key = "key"
+
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok = True)
 
