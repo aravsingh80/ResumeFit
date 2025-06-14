@@ -1,27 +1,21 @@
-<!--Results page-->
-<!DOCTYPE hrml>
-<html>
-    <head>
-        <title>
-            Results
-        </title>
-    </head>
-    <body>
-        <h1>
-            Results
-        </h1>
-        {% if result is string %}
-            <p>
-                {{results}}
-            </p>
-        {% else %}
-            <h2>
-                {{result}}%
-            </h2>
-        {% endif %}
-        <br>
-        <a href = "{{url_for('index')}}">
-            Upload another
-        </a>
-    </body>
+<!-- Results page -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Results</title>
+</head>
+<body>
+    <h1>Results</h1>
+
+    {% if result.startswith("Error") %}
+        <p style="color: red;">{{ result }}</p>
+    {% else %}
+        <h2>{{ result }}% Match</h2>
+        <p>Your resume matches the job description with a similarity score of <strong>{{ result }}%</strong>.</p>
+    {% endif %}
+
+    <br>
+    <a href="{{ url_for('index') }}">Upload another</a>
+</body>
 </html>

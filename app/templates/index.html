@@ -1,1 +1,25 @@
-<!--Main page-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resume Scanner</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Resume Matcher</h1>
+        <form method="POST" enctype="multipart/form-data">
+            <label>Upload Resume (PDF):</label><br>
+            <input type="file" name="resume" accept=".pdf" required><br><br>
+
+            <label>Paste Job Description URL:</label><br>
+            <input type="text" name="job_url" placeholder="https://..." style="width: 100%;"><br><br>
+
+            <label>Or Paste Job Description Manually:</label><br>
+            <textarea name="job_text" rows="8" style="width: 100%;" placeholder="Copy and paste the job description here..."></textarea><br><br>
+
+            <button type="submit">Analyze Match</button>
+        </form>
+    </div>
+</body>
+</html>
