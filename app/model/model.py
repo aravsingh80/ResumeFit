@@ -1,9 +1,12 @@
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+import tensorflow_hub as hub
+import tensorflow as tf
+import numpy as np
+
+embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
 
 def compute_score(resume_text, job_text):
-    documents = [resume_text, job_text]
-    vectorizer = TfidfVectorizer(stop_words="english")
-    tfidf_matrix = vectorizer.fit_transform(documents)
-    score = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
-    return round(score * 100, 2)
+    embeddings = embed([resume_text, job_text])
+    vec1, vec2 = embeddings[0], embeddings[1]
+
+    cosine_sim = np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
+    return round(float(cosine_sim) * 100, 2)
