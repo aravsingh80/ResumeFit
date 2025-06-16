@@ -72,7 +72,7 @@ x = np.concatenate([resume_vectors, job_vectors, cosine_sims], axis = 1)
 y = np.array(labels).astype(np.float32)
 X_train, X_val, y_train, y_val = train_test_split(x, y, test_size = 0.2, random_state = 42)
 model = tf.keras.Sequential([
-    tf.keras.layers.Dense(256, activation = "relu", input_shape = (X.shape[1], )),
+    tf.keras.layers.Dense(256, activation = "relu", input_shape = (x.shape[1], )),
     tf.keras.layers.Dense(64, activation = "relu"),
     tf.keras.layers.Dense(1, activation = "sigmoid")
 ])
