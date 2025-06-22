@@ -3,11 +3,11 @@ import tensorflow as tf
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import cosine_similarity
-import pickle as pkl
+#import pickle as pkl
 import json
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
-with open("training_data.json", "r", encoding="utf-8") as f:
+with open("new_training_data.json", "r", encoding="utf-8") as f:
     data = json.load(f)
 
 
@@ -46,12 +46,12 @@ report_text.append(str(confusion_matrix(y_val, y_pred)))
 with open("evaluation_report.txt", "w", encoding="utf-8") as f:
     f.write("\n".join(report_text))
 
-model.save("app/model/temp_model.h5")
-with open("app/model/temp_data.pkl", "wb") as f:
-    pkl.dump({
-        "resume_vectors": resume_vectors,
-        "job_vectors": job_vectors,
-        "cosine_sims": cosine_sims,
-        "x": x,
-        "y": y
-    }, f)
+model.save("app/model/new_model.h5")
+# with open("app/model/temp_data.pkl", "wb") as f:
+#     pkl.dump({
+#         "resume_vectors": resume_vectors,
+#         "job_vectors": job_vectors,
+#         "cosine_sims": cosine_sims,
+#         "x": x,
+#         "y": y
+#     }, f)
