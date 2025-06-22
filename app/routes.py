@@ -3,6 +3,7 @@ import os
 from app.utils.extract_resume import extract_text
 from app.utils.job_web_scraper import scrape_job
 from app.model.model import compute_score
+from app.utils.feedback_generator import analyze_resume_with_feedback
 
 app = Flask(__name__)
 app.secret_key = "key"
@@ -28,9 +29,12 @@ def index():
             job_text = job_text_input
         if resume_text and job_text:
             score = compute_score(resume_text, job_text)
+            result_obj = analyze_resume_with_feedback(resume_text, job_text, model_score=score)
             session["result"] = f"{score}"
+            session["suggestions"] = result_obj["suggestions"]
         else:
-            session["result"] = "Error: Either missing resume/job description or the job description website can not be extracted and the description needs to be extracted manually."
+            session["result"] = "Error: Either missing resume/job description or the job description website cannot be extracted."
+            session["suggestions"] = []
         return redirect(url_for("result"))
     
     return render_template("index.html")
@@ -38,4 +42,5 @@ def index():
 @app.route("/result")
 def result():
     result = session.get("result", "No result to show")
-    return render_template("result.html", result = result)
+    suggestions = session.get("suggestions", [])
+    return render_template("result.html", result = result, suggestions=suggestions)
