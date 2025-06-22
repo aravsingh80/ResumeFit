@@ -1,8 +1,9 @@
+import os
 import tensorflow_hub as hub
 import tensorflow as tf
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-model = tf.keras.models.load_model("app/model/app/model/new_model.h5")
+model = tf.keras.models.load_model("app/model/new_model.h5")
 embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
 def embed_model(data_values):
     return embed([data_values])[0].numpy()
