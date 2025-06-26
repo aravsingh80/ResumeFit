@@ -8,12 +8,22 @@
 <body>
     <h1>Results</h1>
 
-    {% if result.startswith("Error") %}
-        <p style="color: red;">{{ result }}</p>
+    {% if result.error %}
+        <p style="color: red;">{{ result.error }}</p>
     {% else %}
-        <h2>{{ result }}% Match</h2>
-        <p>Your resume matches the job description with a similarity score of <strong>{{ result }}%</strong>.</p>
-        <p>The following suggestions could help you out: <strong>{{ suggestons }}%</strong>.</p>
+        <h2>{{ result.final_score }}% Match</h2>
+        <p>Your resume matches the job description with a similarity score of <strong>{{ result.final_score }}%</strong>.</p>
+
+        {% if result.suggestions %}
+            <h3>Suggestions to improve your resume:</h3>
+            <ul>
+                {% for suggestion in result.suggestions %}
+                    <li>{{ suggestion }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No suggestions.</p>
+        {% endif %}
     {% endif %}
 
     <br>

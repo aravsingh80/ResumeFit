@@ -1,0 +1,10 @@
+flask
+tensorflow
+tensorflow-hub
+sentence-transformers
+scikit-learn
+transformers
+beautifulsoup4
+requests
+PyPDF2
+pdfminer.six
