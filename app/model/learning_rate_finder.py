@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import tensorflow_hub as hub
 import tensorflow as tf
 import numpy as np
@@ -8,6 +9,44 @@ from tensorflow.keras.callbacks import EarlyStopping
 import json
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 from tensorflow.keras.layers import Dense, Dropout, LeakyReLU, BatchNormalization
+
+class LRFinder(tf.keras.callbacks.Callback):
+    def __init__(self, min_lr=1e-6, max_lr=1e-1, steps=100):
+        super().__init__()
+        self.min_lr = min_lr
+        self.max_lr = max_lr
+        self.steps = steps
+        self.lrs = []
+        self.losses = []
+
+    def on_train_batch_end(self, batch, logs=None):
+        lr = self.min_lr * (self.max_lr / self.min_lr) ** (len(self.lrs) / self.steps)
+        self.model.optimizer.learning_rate.assign(lr)
+        self.lrs.append(lr)
+        self.losses.append(logs["loss"])
+        if len(self.lrs) >= self.steps:
+            self.model.stop_training = True
+
+def run_lr_finder(model, X_train, y_train, min_lr=1e-6, max_lr=1e-1, steps=100, batch_size=32):
+    lr_finder = LRFinder(min_lr=min_lr, max_lr=max_lr, steps=steps)
+    print(type(min_lr), "hello")
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=min_lr), loss="binary_crossentropy")
+    print("hi")
+    model.fit(X_train, y_train, batch_size=batch_size, callbacks=[lr_finder], verbose=0)
+    print("hi2")
+    plt.plot(lr_finder.lrs, lr_finder.losses)
+    plt.xscale("log")
+    plt.xlabel("Learning Rate")
+    plt.ylabel("Loss")
+    plt.title("Learning Rate Finder")
+    plt.show()
+    losses = np.array(lr_finder.losses)
+    lrs = np.array(lr_finder.lrs)
+
+    # Find index of minimum loss and print learning rate just before that point
+    min_loss_idx = losses.argmin()
+    best_lr = lrs[min_loss_idx - 1] if min_loss_idx > 0 else lrs[0]
+    print(best_lr)
 
 with open("test_training_data.json", "r", encoding="utf-8") as f:
     data = json.load(f)
@@ -47,52 +86,4 @@ model = tf.keras.Sequential([
 
     tf.keras.layers.Dense(1, activation="sigmoid")
 ])
-# model = tf.keras.Sequential([
-#     Dense(256),
-#     BatchNormalization(),
-#     LeakyReLU(alpha=0.01),
-#     Dropout(0.3),
-
-#     Dense(128),
-#     BatchNormalization(),
-#     LeakyReLU(alpha=0.01),
-#     Dropout(0.2),
-
-#     Dense(32),
-#     LeakyReLU(alpha=0.01),
-
-#     Dense(1, activation="sigmoid")
-# ])
-
-model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate=1.1220184543019633e-06),
-    loss="binary_crossentropy",
-    metrics=["accuracy", tf.keras.metrics.AUC(name="auc")]
-    #metrics=["accuracy"]
-)
-early_stop = EarlyStopping(monitor="val_loss", patience=5, restore_best_weights=True)
-model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=100, batch_size=8, callbacks=[early_stop]) #50 epochs
-#model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=50, batch_size=8)
-
-y_pred_probs = model.predict(X_val)
-y_pred = (y_pred_probs > 0.4).astype("int32")
-
-report_text = []
-report_text.append("Accuracy: {:.2f}".format(accuracy_score(y_val, y_pred)))
-report_text.append("\n Classification Report:\n")
-report_text.append(classification_report(y_val, y_pred, digits=2, zero_division=0))
-report_text.append("\n Confusion Matrix:\n")
-report_text.append(str(confusion_matrix(y_val, y_pred)))
-
-with open("evaluation_report.txt", "w", encoding="utf-8") as f:
-    f.write("\n".join(report_text))
-
-model.save("test_model.keras")
-# with open("app/model/temp_data.pkl", "wb") as f:
-#     pkl.dump({
-#         "resume_vectors": resume_vectors,
-#         "job_vectors": job_vectors,
-#         "cosine_sims": cosine_sims,
-#         "x": x,
-#         "y": y
-#     }, f)
+run_lr_finder(model, X_train, y_train)
