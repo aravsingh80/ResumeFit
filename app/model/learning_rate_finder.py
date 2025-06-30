@@ -61,7 +61,7 @@ labels = [d["label"] for  d in data]
 resume_vectors = embed_model(resumes)
 job_vectors = embed_model(jobs)
 cosine_sims = [cosine_similarity([resume_vectors[x]], [job_vectors[x]])[0][0] for x in range(len(resume_vectors))]
-weight_value = 0.0 #Can be changed
+weight_value = 0.5 #Can be changed
 cosine_sims = np.array(cosine_sims).reshape(-1, 1) * weight_value
 x = np.concatenate([resume_vectors, job_vectors, cosine_sims], axis = 1)
 y = np.array(labels).astype(np.float32)
