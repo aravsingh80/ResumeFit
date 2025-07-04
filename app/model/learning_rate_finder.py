@@ -48,7 +48,7 @@ def run_lr_finder(model, X_train, y_train, min_lr=1e-6, max_lr=1e-1, steps=100, 
     best_lr = lrs[min_loss_idx - 1] if min_loss_idx > 0 else lrs[0]
     print(best_lr)
 
-with open("test_training_data.json", "r", encoding="utf-8") as f:
+with open("most_recent_dataset.json", "r", encoding="utf-8") as f:
     data = json.load(f)
 
 
@@ -75,14 +75,13 @@ X_train, X_val, y_train, y_val = train_test_split(x, y, test_size = 0.2, random_
 #     tf.keras.layers.Dense(1, activation="sigmoid")
 # ])
 model = tf.keras.Sequential([
-    tf.keras.layers.Dense(256),
-    BatchNormalization(),
-    LeakyReLU(alpha=0.01),
+    tf.keras.layers.Dense(512, activation="relu", input_shape=(x.shape[1],)),
     tf.keras.layers.Dropout(0.3),
-
-    tf.keras.layers.Dense(64),
-    LeakyReLU(alpha=0.01),
+    
+    tf.keras.layers.Dense(128, activation="relu"),
     tf.keras.layers.Dropout(0.2),
+
+    tf.keras.layers.Dense(32, activation="relu"),
 
     tf.keras.layers.Dense(1, activation="sigmoid")
 ])
