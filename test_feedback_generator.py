@@ -1,7 +1,3 @@
-from app.utils.feedback_generator import analyze_resume_with_feedback
-
-resume = "Experienced Python developer with background in machine learning and backend systems."
-job = "Looking for a backend developer skilled in Python, APIs, and distributed systems."
-
-result = analyze_resume_with_feedback(resume, job, model_score=0.6)
-print("RESULT:", result)
+version https://git-lfs.github.com/spec/v1
+oid sha256:b67a9185f6e881932418a8e9261d0c4ac1f9035a34898ecd83678a401315c222
+size 357
