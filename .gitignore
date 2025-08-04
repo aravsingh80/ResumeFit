@@ -1,0 +1,32 @@
+# Ignore downloaded models and large files
+*.bin
+*.pt
+*.ckpt
+*.safetensors
+*.gguf
+models/
+ollama/
+ollama_models/
+
+# Hugging Face cache
+.cache/
+~/.cache/huggingface/
+~/.cache/torch/sentence_transformers/
+
+# Specific NLP models you downloaded but are not using
+app/model/falcon-7b*
+app/model/flan-t5*
+app/model/distilgpt2*
+app/model/*.keras
+
+# Python bytecode and cache
+__pycache__/
+*.pyc
+
+# Logs and environments
+*.log
+.env
+venv/
+
+# VSCode settings (optional)
+.vscode/
