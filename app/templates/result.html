@@ -17,8 +17,8 @@
         {% if result.suggestions %}
             <h3>Suggestions to improve your resume:</h3>
             <ul>
-                {% for suggestion in result.suggestions %}
-                    <li>{{ suggestion }}</li>
+                {% for line in result.suggestions.split('\n') if line.strip() %}
+                    <li>{{ line.lstrip('• ').strip() }}</li>
                 {% endfor %}
             </ul>
         {% else %}
