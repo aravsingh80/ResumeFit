@@ -1,18 +1,38 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8"/>
+  <meta charset="utf-8" />
   <title>ResumeFit</title>
-  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <h3>ResumeFit</h3>
+  <div class="container">
+    <h3>ResumeFit</h3>
+    <p class="hint">Prototype: paste a job description and upload a resume PDF</p>
 
-  <p class="hint">Prototype: uses a static resume and a fixed job description on the backend.</p>
+    <textarea id="jobDesc" placeholder="Paste job description here..."></textarea>
+    <label class="file-row">
+      <input type="file" id="resumeFile" accept=".pdf" />
+    </label>
+    <button id="analyze">Analyze</button>
 
-  <button id="analyze">Analyze</button>
+    <div id="result" class="result">
+      <div class="score-wrap">
+        <svg class="gauge" viewBox="0 0 200 120" preserveAspectRatio="xMidYMid meet">
+          <!-- background track -->
+          <path id="gTrack" d="M 20 100 A 80 80 0 0 1 180 100"
+                fill="none" stroke="#E5E7EB" stroke-width="14" stroke-linecap="round"/>
+          <!-- foreground (filled) -->
+          <path id="gFill" d="M 20 100 A 80 80 0 0 1 180 100"
+                fill="none" stroke="#22C55E" stroke-width="14" stroke-linecap="round"/>
+        </svg>
+        <div id="scoreText" class="score-text">0%</div>
+      </div>
 
-  <div id="result" class="result"></div>
+      <div id="jobTitle" class="job-title"></div>
+      <div id="feedback" class="feedback"></div>
+    </div>
+  </div>
 
   <script src="popup.js"></script>
 </body>
