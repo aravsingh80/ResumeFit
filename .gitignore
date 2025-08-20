@@ -30,3 +30,5 @@ venv/
 
 # VSCode settings (optional)
 .vscode/
+__pycache__/
+*.pyc
