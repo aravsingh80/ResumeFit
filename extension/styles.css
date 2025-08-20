@@ -1,5 +1,5 @@
 body {
-  font-family: system-ui, sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
   margin: 0;
   background: #fafafa;
 }
@@ -56,9 +56,9 @@ button {
 
 .score-wrap {
   position: relative;
-  width: 260px;          /* prevents squish */
-  height: 160px;         /* ensures ample space */
-  margin: 0 auto 14px;
+  width: 260px;
+  height: 160px;
+  margin: 0 auto 8px;
 }
 
 .gauge {
@@ -72,21 +72,40 @@ button {
   bottom: 28px;
   left: 0;
   width: 100%;
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 800;
   color: #16A34A;
 }
 
-.job-title {
-  font-size: 15px;
-  font-weight: 700;
-  margin: 6px 0 10px;
-  color: #111;
+.section-title {
+  margin: 8px 0 6px;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: left;
 }
 
-.feedback {
-  font-size: 14px;
+.suggestions-list {
+  margin: 0;
+  padding-left: 20px;            /* bullet indent */
   text-align: left;
-  white-space: pre-wrap;
-  line-height: 1.45;
+  list-style: disc;
+  font-size: 15px;               /* nicer size */
+  line-height: 1.55;             /* more readable */
+  color: #111827;                /* near-black */
 }
+
+.suggestions-list li {
+  margin: 6px 0;
+}
+
+/* Fade-in effect for suggestions */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+

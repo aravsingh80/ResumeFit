@@ -1,20 +1,17 @@
 document.getElementById("analyze").addEventListener("click", async () => {
-  const resultEl = document.getElementById("result");
   const scoreText = document.getElementById("scoreText");
-  const jobTitleEl = document.getElementById("jobTitle");
-  const feedbackEl = document.getElementById("feedback");
   const gFill = document.getElementById("gFill");
-
   const resumeFile = document.getElementById("resumeFile").files[0];
   const jobDesc = document.getElementById("jobDesc").value;
 
-  resultEl.style.display = "block";
-  scoreText.textContent = "…";
-  jobTitleEl.textContent = "";
-  feedbackEl.textContent = "";
+  const header = document.getElementById("suggHeader");
+  const list = document.getElementById("feedbackList");
 
-  // Reset gauge to 0
+  // reset UI
+  scoreText.textContent = "…";
   setGaugePercent(gFill, 0);
+  header.style.display = "none";
+  list.innerHTML = "";
 
   if (!resumeFile || !jobDesc.trim()) {
     scoreText.textContent = "Missing info!";
@@ -35,43 +32,67 @@ document.getElementById("analyze").addEventListener("click", async () => {
     const data = await res.json();
 
     const score = Math.max(0, Math.min(100, Math.round(data.score || 0)));
-    const feedback = Array.isArray(data.feedback) ? data.feedback : [data.feedback];
-
-    // Animate gauge to score
     animateGaugeTo(gFill, score, 500);
     scoreText.textContent = score + "%";
 
-    jobTitleEl.textContent = data.job_description || "Job Description";
-    feedbackEl.innerHTML = feedback.map(f => "• " + f).join("\n");
+    // Build pretty suggestions list
+    const suggestionsRaw = Array.isArray(data.feedback) ? data.feedback : [data.feedback || ""];
+    const items = normalizeSuggestions(suggestionsRaw);
 
+    // Staggered fade-in items
+    list.innerHTML = "";
+    items.forEach((text, i) => {
+      const li = document.createElement("li");
+      li.textContent = text;
+      li.classList.add("fade-in");
+      li.style.animationDelay = `${i * 0.15}s`;  // 150ms stagger
+      list.appendChild(li);
+    });
+
+    header.style.display = items.length ? "block" : "none";
   } catch (err) {
     scoreText.textContent = "Error";
-    feedbackEl.textContent = "Backend not reachable or invalid response.";
+    list.innerHTML = `<li>Backend not reachable or invalid response.</li>`;
   }
 });
 
-/**
- * Prepare the stroke-dasharray fill for the semicircle.
- * The arc path length is measured at runtime.
- */
+/** Convert raw suggestion text into clean bullet items */
+function normalizeSuggestions(arr) {
+  const flat = arr.join("\n");
+  const parts = flat
+    .split(/\n|•|- |\u2022/g)
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  return parts.map(p => {
+    let t = p.replace(/^suggestions?:\s*/i, "");
+    if (!t) return t;
+    return t.charAt(0).toUpperCase() + t.slice(1);
+  });
+}
+
+function escapeHTML(str) {
+  return (str || "").replace(/[&<>"']/g, s => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[s]));
+}
+
+/* -------- gauge helpers ---------- */
 function setGaugePercent(pathEl, percent) {
   const p = Math.max(0, Math.min(100, percent));
-  const len = pathEl.getTotalLength();      // full 180° arc length
+  const len = pathEl.getTotalLength();
   pathEl.style.strokeDasharray = `${len} ${len}`;
-  // We want 0% = full offset (invisible), 100% = 0 offset (full arc)
   pathEl.style.strokeDashoffset = String(len * (1 - p / 100));
 }
 
-/** Smooth animation from current fill to target percent */
 function animateGaugeTo(pathEl, targetPercent, durationMs = 500) {
   const len = pathEl.getTotalLength();
   const currentOffset = parseFloat(getComputedStyle(pathEl).strokeDashoffset || len);
   const targetOffset = len * (1 - targetPercent / 100);
-
   const start = performance.now();
   function tick(ts) {
     const t = Math.min(1, (ts - start) / durationMs);
-    const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+    const eased = 1 - Math.pow(1 - t, 3);
     const offset = currentOffset + (targetOffset - currentOffset) * eased;
     pathEl.style.strokeDasharray = `${len} ${len}`;
     pathEl.style.strokeDashoffset = String(offset);
