@@ -1,4 +1,8 @@
+/**********************
+ * PERSISTENCE SETUP  *
+ **********************/
 
+// Restore job description on load
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     const { jobDesc } = await chrome.storage.local.get("jobDesc");
@@ -8,16 +12,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("Failed to restore jobDesc", e);
   }
 
+  // Show saved resume (filename + size) if present
   const rec = await idbGet();
-  updateResumeStatus(!!rec);
+  updateResumeStatus(rec?.meta || null);
 });
 
 // Autosave JD while typing
 document.getElementById("jobDesc")?.addEventListener("input", debounce(async (e) => {
   try {
     await chrome.storage.local.set({ jobDesc: e.target.value });
-  } catch (e) {
-    console.error("Failed to save jobDesc", e);
+  } catch (e2) {
+    console.error("Failed to save jobDesc", e2);
   }
 }, 200));
 
@@ -60,26 +65,19 @@ async function idbGet() {
   });
 }
 
-function updateResumeStatus(hasResume) {
-  const statusEl = document.getElementById("currResumeStatus");
-  if (!statusEl) return;
-  statusEl.textContent = hasResume
-    ? 'current resume: "resume saved by chrome.storage"'
-    : "No resume saved";
-}
-
 // Save newly chosen file
 document.getElementById("resumeFile")?.addEventListener("change", async (e) => {
   const file = e.target.files?.[0];
   if (!file) return;
   try {
-    await idbPut({ blob: file, meta: {
+    const meta = {
       name: file.name,
       type: file.type || "application/pdf",
       size: file.size,
       savedAt: Date.now()
-    }});
-    updateResumeStatus(true);
+    };
+    await idbPut({ blob: file, meta });
+    updateResumeStatus(meta);
   } catch (err) {
     console.error("Failed to persist resume", err);
   }
@@ -94,6 +92,28 @@ async function getStoredResumeMeta() {
   const rec = await idbGet();
   return rec?.meta || null;
 }
+
+// Status line updater
+function updateResumeStatus(meta) {
+  const statusEl = document.getElementById("currResumeStatus");
+  if (!statusEl) return;
+  if (!meta) {
+    statusEl.textContent = "current resume: none";
+    return;
+  }
+  const kb = Math.max(1, Math.round((meta.size || 0) / 1024));
+  statusEl.textContent = `current resume: ${truncate(meta.name, 40)} (${kb} KB)`;
+}
+
+function truncate(s, max) {
+  if (!s) return s;
+  return s.length > max ? s.slice(0, Math.max(0, max - 3)) + "..." : s;
+}
+
+/*************************
+ * YOUR EXISTING HANDLER *
+ *************************/
+
 document.getElementById("analyze").addEventListener("click", async () => {
   const scoreText = document.getElementById("scoreText");
   const gFill = document.getElementById("gFill");

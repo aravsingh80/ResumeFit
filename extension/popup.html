@@ -7,7 +7,6 @@
   <style>
     .row { display:flex; align-items:center; gap:.5rem; }
     .muted { font-size:.85rem; color:#6b7280; }
-    .vgap { height:8px; }
   </style>
 </head>
 <body>
@@ -22,9 +21,8 @@
       <span>Insert new resume</span>
       <input type="file" id="resumeFile" accept=".pdf" />
     </label>
-    <div id="currResumeStatus" class="muted">No resume saved</div>
+    <div id="currResumeStatus" class="muted">current resume: none</div>
 
-    <div class="vgap"></div>
     <button id="analyze">Analyze</button>
 
     <div id="result" class="result">
@@ -39,7 +37,6 @@
       </div>
 
       <div id="jobTitle" class="job-title" style="display:none;"></div>
-
       <h4 id="suggHeader" class="section-title" style="display:none;">Suggestions</h4>
       <ul id="feedbackList" class="suggestions-list"></ul>
     </div>
